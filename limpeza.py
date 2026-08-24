@@ -10,22 +10,22 @@ numéricos.
 '''
 import pandas as pd
 
-# 1. Baixe os arquivos: Focando nos dados da Plant_1
+# 1. Leitura dos arquivos: Focando nos dados da Plant_1
 df_gen = pd.read_csv('Plant_1_Generation_Data.csv')
 df_weather = pd.read_csv('Plant_1_Weather_Sensor_Data.csv')
 
-# Padronização crítica: os arquivos possuem máscaras de data divergentes
+# Padronização: Convertendo a coluna DATE_TIME para datetime em ambos os DataFrames
 df_gen['DATE_TIME'] = pd.to_datetime(df_gen['DATE_TIME'], format='%d-%m-%Y %H:%M')
 df_weather['DATE_TIME'] = pd.to_datetime(df_weather['DATE_TIME'], format='%Y-%m-%d %H:%M:%S')
 
-# 2. Faça a junção (Merge): Cruzando clima e potência no mesmo instante
+# 2. Merge: Cruzando clima e potência no mesmo instante por meio da coluna DATE_TIME
 df_merged = pd.merge(df_weather, df_gen, on='DATE_TIME', how='inner')
 
 # 3 e 4. Remova textos/datas e fixe a coluna alvo: 
-# Mantemos apenas as variáveis independentes de clima e jogamos DC_POWER para a direita
+# Mantendo apenas as variáveis independentes de clima e o target DC_POWER para a direita
 colunas_numericas = ['AMBIENT_TEMPERATURE', 'MODULE_TEMPERATURE', 'IRRADIATION', 'DC_POWER']
 
-# O .dropna() garante que não irão linhas vazias para quebrar a regressão depois
+# 5. Remoção de valores nulos: Mantendo apenas as linhas com dados completos
 df_final = df_merged[colunas_numericas].dropna()
 
 # Salva o arquivo final limpo na mesma pasta
